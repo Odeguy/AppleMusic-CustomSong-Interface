@@ -10,9 +10,10 @@ tab_width = 1200 - tab_select_width
 
 class App():
     tabs = {}
-    config_file_path = "config.json"
+    config_file_path = "src\config.json"
     def __init__(self):
-        configuration = json.load(App.config_file_path)
+        with open(App.config_file_path, "r") as file:
+            configuration = json.load(file)
         
         root = tkinter.Tk(className=" Apple Music Custom Song Interface")
         root.geometry("1200x900")
@@ -41,11 +42,15 @@ class App():
         frame.pack(expand=True, anchor="nw", fill="both", side="left")
         frame.propagate(False)
 
-        exit_button = ttk.Button(frame, width=10, text="Close", command= lambda: frame.destroy())
+        exit_button = ttk.Button(frame, width=10, text="Close", command= lambda: App.remove_frame(type, frame))
         exit_button.pack(anchor="ne", side="right")
 
         App.tabs[type] = frame
         return frame
+
+    def remove_frame(type, frame):
+        frame.destroy()
+        App.tabs.pop(type)
 
     def open_home(root):
         frame = App.new_tab("home", root)
