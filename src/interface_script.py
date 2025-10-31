@@ -1,19 +1,20 @@
 import tkinter
 from tkinter import ttk
 import sv_ttk
-import ffmpeg
-from pytube import YouTube
 import json
+from src import operations
 
+#run using python -m src.interface_script
 tab_select_width = 400
 tab_width = 1200 - tab_select_width
 
 class App():
     tabs = {}
     config_file_path = "src\config.json"
-    def __init__(self):
-        with open(App.config_file_path, "r") as file:
+    with open(config_file_path, "r") as file:
             configuration = json.load(file)
+    def __init__(self):
+        pass
         
         root = tkinter.Tk(className=" Apple Music Custom Song Interface")
         root.geometry("1200x900")
