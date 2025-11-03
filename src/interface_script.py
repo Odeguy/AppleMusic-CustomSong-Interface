@@ -58,15 +58,12 @@ class App():
         App.tabs.pop(type)
 
     def open_add_from_file(root):
-        audio_file: str
-        image_file: str
-
         frame = App.new_tab("Add From File", root)
 
         file_selector = ttk.PanedWindow(frame, orient="horizontal")
         file_selector.pack(anchor="n", side="top", fill="x", expand=True)
         
-        file_select_button = ttk.Button(file_selector, width =  10, text="Choose File", command= lambda: file_dialogue("image"), padding="10 10 10 10")
+        file_select_button = ttk.Button(file_selector, width =  10, text="Choose File", command= lambda: file_dialogue("file_path"), padding="10 10 10 10")
         file_select_button.pack(side="left")
 
         file_select_entry = ttk.Entry(file_selector)
@@ -79,7 +76,6 @@ class App():
             "album",
             "albumartist",
             "artist",
-            "artwork",
             "comment",
             "compilation",
             "composer",
@@ -93,6 +89,17 @@ class App():
             "year",
             "isrc"
         ])
+        for p in properties.keys(): properties[p] = tkinter.StringVar()
+
+        name_widget = ttk.PanedWindow(properties_selector, orient="horizontal", height=500)
+        name_widget.pack(anchor="center", side="top", fill="x", expand=True)
+
+        name_label = ttk.Label(name_widget, text="song name", padding="10 0 10 0")
+        name_label.pack(side="left", anchor="center")
+
+        name_entry = tkinter.Entry(name_widget)
+        name_entry.pack(anchor="n", side="left", fill="x", expand=True)
+        
         for property in properties.keys():
             if property == "artwork": continue
             widget = ttk.PanedWindow(properties_selector, orient="horizontal", height=500)
@@ -104,6 +111,16 @@ class App():
             entry = tkinter.Entry(widget, textvariable=properties[property])
             entry.pack(anchor="n", side="left", fill="x", expand=True)
 
+        artwork_selector = ttk.PanedWindow(frame, orient="vertical")
+        artwork_selector.pack(anchor="n", side="top", fill="x", expand=True)
+        
+        artwork_select_button = ttk.Button(artwork_selector, width = 15, text="Choose Artwork", command= lambda: file_dialogue("artwork"), padding="10 10 10 10")
+        artwork_select_button.pack(side="left")
+
+        artwork_select_entry = ttk.Entry(artwork_selector)
+        artwork_select_entry.pack(side="left", expand=True, fill="x", anchor="center")
+
+
         file_type_widget = ttk.PanedWindow(frame, orient="horizontal", height=500)
         file_type_widget.pack(anchor="center", side="top", fill="x", expand=True)
 
@@ -114,21 +131,29 @@ class App():
         file_type_box.pack()
         file_type_box.set(operations.Operations.file_types[0])
 
-        file_type: str
+        file_type: str = operations.Operations.file_types[0]
 
-        def select_file_type(event):
-            file_type = file_type_box.get()
+        def select_file_type():
+            App.file_type = file_type_box.get()
 
         file_type_box.bind("<<ComboboxSelected>>", select_file_type)
 
         def file_dialogue(type):
             #type = image or str
-            file_path = filedialog.askopenfile().name
+            match type:
+                case "file_path":
+                    file_path = filedialog.askopenfile().name
 
-            file_select_entry.delete(0, len(file_select_entry.get()))
-            file_select_entry.insert(0, file_path)
+                    file_select_entry.delete(0, len(file_select_entry.get()))
+                    file_select_entry.insert(0, file_path)
+                case "artwork":
+                    artwork = filedialog.askopenfile().name
 
-        confirmation_box = ttk.Button()
+                    artwork_select_entry.delete(0, len(artwork_select_entry.get()))
+                    artwork_select_entry.insert(0, artwork)
+
+        confirmation_box = ttk.Button(frame, text="Confirm and Import to Apple Music", command= lambda: print(operations.Operations.add_to_apple_music(file_select_entry.get(), file_type, properties, name_entry.get(), artwork_select_entry.get())))
+        confirmation_box.pack(anchor="n", side="top")
 
         
     

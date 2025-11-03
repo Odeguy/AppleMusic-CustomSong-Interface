@@ -21,7 +21,22 @@ class Operations:
     def add_from_yt_link(file_link: str):
         pass
 
-    def add_to_apple_music(file_path: str, type: str, properties: dict):
+    def add_to_apple_music(file_path: str, type: str, properties: dict, song_name: str, artwork_path: str):
+        file = music_tag.load_file(file_path)
+
+       
+        with open(artwork_path, 'rb') as img_in:
+            file.append_tag('artwork', img_in.read())
+
+        for tag in properties:
+            try:
+                property = properties[tag].get()
+                if property != "": file[tag] = property
+            except:
+                return "Invalid Paramater Entered"
+        
+        file.save()
+
         folder = Operations.configuration["add_to_apple_music_path"]
         file_name = file_path[::-1]
         file_name = file_name[file_name.find('.')+1:file_name.find('/')]
@@ -29,15 +44,10 @@ class Operations:
         (
             ffmpeg
             .input(file_path)
-            .output(folder + file_name + "." + type)
+            .output(folder + "/" + song_name + "." + type)
             .run()
         )
-        
-        final_path = Operations.configuration["unknown_songs_folder_path"] + file_name
-        final = music_tag.load_file(final_path)
-
-        for tag in properties:
-            if tag: final[tag] = properties[tag]
+        return ""
 
 
 if __name__ == "__main__":
